@@ -14,7 +14,6 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
 
-  /* STICKY CONDITION BAR */
   .condition-bar {
     position: sticky; top: 0; z-index: 100;
     background: rgba(15,17,23,.96); backdrop-filter: blur(16px);
@@ -28,11 +27,9 @@
   .badge.neu { border-color: var(--border); color: var(--muted); background: var(--card2); }
   .badge.no  { border-color: var(--red); color: var(--red); background: rgba(239,71,111,.08); }
 
-  /* PAGES */
   .page { display: none; flex: 1; }
   .page.active { display: block; }
 
-  /* HOME */
   #home { padding: 32px 24px 60px; }
   .home-header { text-align: center; margin-bottom: 28px; }
   .home-header h1 { font-size: 1.9rem; font-weight: 800; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
@@ -55,7 +52,6 @@
   .rp.y { border-color: rgba(255,209,102,.3); color: var(--yellow); background: rgba(255,209,102,.07); }
   .rp.m { border-color: var(--border); color: var(--muted); }
 
-  /* DETAIL */
   #detail { padding-bottom: 60px; }
   .detail-topbar { background: rgba(15,17,23,.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 14px; }
   .back-btn { background: var(--card2); border: 1.5px solid var(--border); color: var(--text); font-size: .88rem; font-weight: 600; padding: 7px 16px; border-radius: 10px; cursor: pointer; transition: background .15s; }
@@ -64,7 +60,6 @@
   .detail-uni-name { font-size: 1.05rem; font-weight: 700; }
 
   .detail-body { max-width: 860px; margin: 0 auto; padding: 24px 24px 0; display: flex; flex-direction: column; gap: 18px; }
-
   .dept-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
   .dept-card-header { background: var(--card2); padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .dept-card-name { font-size: 1.1rem; font-weight: 800; line-height: 1.4; }
@@ -74,7 +69,6 @@
   .rank-big.g { background: rgba(6,214,160,.15); color: var(--green); border: 1.5px solid rgba(6,214,160,.35); }
   .rank-big.y { background: rgba(255,209,102,.1); color: var(--yellow); border: 1.5px solid rgba(255,209,102,.28); }
   .rank-big.n { background: var(--card2); color: var(--muted); border: 1.5px solid var(--border); font-size: .78rem; }
-
   .dept-card-body { padding: 16px 22px; display: flex; flex-direction: column; gap: 14px; }
   .info-label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
   .grade-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -92,7 +86,6 @@
 </head>
 <body>
 
-<!-- STICKY CONDITION BAR (always visible) -->
 <div class="condition-bar">
   <span class="cb-label">我的條件</span>
   <span class="badge neu">校排 3%</span>
@@ -104,7 +97,6 @@
   <span class="badge no">無數A</span>
 </div>
 
-<!-- HOME PAGE -->
 <div id="home" class="page active">
   <div class="home-header">
     <h1>🎓 志願校系總覽</h1>
@@ -113,7 +105,6 @@
   <div class="uni-grid" id="uniGrid"></div>
 </div>
 
-<!-- DETAIL PAGE -->
 <div id="detail" class="page">
   <div class="detail-topbar">
     <button class="back-btn" onclick="goHome()">← 返回</button>
@@ -136,6 +127,24 @@ const data = [
       { name:"東亞學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測英文","學測國文","學測數B","學測社會","英文學業"], r1:"18%", r2:"", note:"" },
       { name:"教育心理與輔導學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測數B","英文學業","國文學業","數學學業"], r1:"2%", r2:"", note:"" },
       { name:"教育學院學士班", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測英文","學測社會","學測國文","學測數B","英文學業"], r1:"3%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"UTaipei", name:"臺北市立大學",
+    depts:[
+      { name:"教育學系", sub:"", grades:[["國「均」","mid"],["英「後」","lo"],["數B「後」","lo"],["社「後」","lo"]], seq:["在校學業","學測國文","學測數B","學測英文","學測社會","國文學業","數學學業"], r1:"6%", r2:"", note:"" },
+      { name:"特殊教育學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測數B","國文學業","英文學業","數學學業"], r1:"25%", r2:"", note:"" },
+      { name:"幼兒教育學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測社會","學測國+英+社","英文學業","國文學業"], r1:"42%", r2:"11%", note:"" },
+      { name:"心理與諮商學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測英文","學測國文","學測數B","學測社會","英文學業"], r1:"8%", r2:"", note:"" },
+      { name:"學習與媒材設計學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測社會","學測數B","國文學業","英文學業"], r1:"29%", r2:"", note:"" },
+      { name:"中國語文學系", sub:"", grades:[["國「均」","mid"],["英「底」","lo"],["社「均」","mid"]], seq:["在校學業","學測國文","國文學業","學測社會","歷史學業","學測國+英","學測英文"], r1:"25%", r2:"", note:"" },
+      { name:"英語教學系", sub:"", grades:[["英「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測國+英","英文學業","國文學業","數學學業"], r1:"5%", r2:"", note:"" },
+      { name:"公共事務學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","公民學業","國文學業","英文學業","學測社會","學測國文","學測英文"], r1:"9%", r2:"", note:"" },
+      { name:"歷史與地理學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+社","學測國文","學測英文","學測社會","國文學業","英文學業"], r1:"35%", r2:"38%", note:"" },
+      { name:"城市發展學系", sub:"", grades:[["社「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測社會","國文學業","英文學業","地理學業"], r1:"15%", r2:"", note:"" },
+      { name:"行銷與管理學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測英文","學測數B","學測國文","英文學業","數學學業","國文學業"], r1:"19%", r2:"", note:"" },
+      { name:"視覺藝術學系", sub:"", grades:[["國「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測社會","學測國+英","英文學業","國文學業"], r1:"12%", r2:"", note:"" },
+      { name:"休閒運動管理學系", sub:"", grades:[["國「後」","lo"],["社「後」","lo"]], seq:["在校學業","學測國+社","學測社會","學測國文","公民學業","國文學業","學測英文"], r1:"30%", r2:"", note:"" },
     ]
   },
   {
@@ -215,7 +224,6 @@ function rc(v) {
   return parseInt(v) <= 5 ? "g" : "y";
 }
 
-// Build home
 const grid = document.getElementById("uniGrid");
 data.forEach((uni, idx) => {
   const pills = uni.depts.slice(0,4).map(d => {
