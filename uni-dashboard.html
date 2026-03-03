@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>志願校系總覽</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d2e;
+    --card2: #222538;
+    --accent: #6c63ff;
+    --accent2: #48cae4;
+    --green: #06d6a0;
+    --yellow: #ffd166;
+    --red: #ef476f;
+    --text: #e8eaf6;
+    --muted: #8b8fa8;
+    --border: #2e3150;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* ── PAGE SYSTEM ── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── HOME PAGE ── */
+  #home { padding: 40px 24px 60px; }
+  .home-header { text-align: center; margin-bottom: 32px; }
+  .home-header h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  .home-header p { color: var(--muted); font-size: .95rem; }
+
+  .profile-bar { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 24px; max-width: 780px; margin: 0 auto 36px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .profile-bar .label { font-size: .82rem; color: var(--muted); font-weight: 600; width: 100%; }
+  .badge { border-radius: 20px; padding: 5px 14px; font-size: .82rem; font-weight: 600; border: 1.5px solid; }
+  .badge.top { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.1); }
+  .badge.avg { border-color: var(--accent2); color: var(--accent2); background: rgba(72,202,228,.08); }
+  .badge.neu { border-color: var(--border); color: var(--muted); background: var(--card2); }
+  .badge.no  { border-color: var(--red); color: var(--red); background: rgba(239,71,111,.08); }
+
+  .uni-grid { max-width: 780px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 560px) { .uni-grid { grid-template-columns: 1fr; } }
+
+  .uni-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 22px 24px; cursor: pointer; transition: transform .18s, box-shadow .18s, border-color .18s; display: flex; flex-direction: column; gap: 10px; }
+  .uni-card:hover, .uni-card:active { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(108,99,255,.22); border-color: var(--accent); }
+  .uni-card-top { display: flex; align-items: center; gap: 12px; }
+  .uni-tag { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: .78rem; font-weight: 800; padding: 5px 12px; border-radius: 10px; letter-spacing: .06em; flex-shrink: 0; }
+  .uni-name { font-size: 1rem; font-weight: 700; line-height: 1.3; }
+  .uni-meta { display: flex; align-items: center; justify-content: space-between; }
+  .dept-count { font-size: .8rem; color: var(--muted); background: var(--card2); padding: 4px 12px; border-radius: 20px; }
+  .arrow-btn { font-size: 1.1rem; color: var(--accent); }
+
+  /* rank preview pills */
+  .rank-preview { display: flex; flex-wrap: wrap; gap: 5px; }
+  .rp { font-size: .72rem; padding: 2px 8px; border-radius: 8px; border: 1px solid; }
+  .rp.g { border-color: rgba(6,214,160,.35); color: var(--green); background: rgba(6,214,160,.08); }
+  .rp.y { border-color: rgba(255,209,102,.3); color: var(--yellow); background: rgba(255,209,102,.07); }
+  .rp.m { border-color: var(--border); color: var(--muted); }
+
+  /* ── DETAIL PAGE ── */
+  #detail { padding: 0 0 60px; }
+
+  .detail-topbar { position: sticky; top: 0; z-index: 10; background: rgba(15,17,23,.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; gap: 16px; }
+  .back-btn { background: var(--card2); border: 1.5px solid var(--border); color: var(--text); font-size: .9rem; font-weight: 600; padding: 8px 18px; border-radius: 10px; cursor: pointer; transition: background .15s; display: flex; align-items: center; gap: 6px; }
+  .back-btn:hover { background: var(--border); }
+  .detail-topbar-info { display: flex; align-items: center; gap: 12px; }
+  .detail-uni-tag { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: .8rem; font-weight: 800; padding: 5px 14px; border-radius: 10px; letter-spacing: .06em; }
+  .detail-uni-name { font-size: 1.1rem; font-weight: 700; }
+
+  .detail-body { max-width: 860px; margin: 0 auto; padding: 28px 24px 0; display: flex; flex-direction: column; gap: 20px; }
+
+  .dept-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
+  .dept-card-header { background: var(--card2); padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .dept-title-block {}
+  .dept-card-name { font-size: 1.15rem; font-weight: 800; line-height: 1.4; }
+  .dept-card-sub { font-size: .85rem; color: var(--accent2); margin-top: 3px; font-weight: 600; }
+
+  .rank-group { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; flex-shrink: 0; }
+  .rank-big { font-size: .9rem; font-weight: 700; padding: 7px 18px; border-radius: 14px; white-space: nowrap; }
+  .rank-big.g { background: rgba(6,214,160,.15); color: var(--green); border: 1.5px solid rgba(6,214,160,.35); }
+  .rank-big.y { background: rgba(255,209,102,.1); color: var(--yellow); border: 1.5px solid rgba(255,209,102,.28); }
+  .rank-big.n { background: var(--card2); color: var(--muted); border: 1.5px solid var(--border); font-size: .8rem; }
+
+  .dept-card-body { padding: 18px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .info-row { display: flex; flex-direction: column; gap: 6px; }
+  .info-label { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .grade-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .gtag { font-size: .82rem; font-weight: 600; padding: 4px 12px; border-radius: 10px; border: 1.5px solid; }
+  .gtag.hi { border-color: rgba(108,99,255,.5); color: var(--accent); background: rgba(108,99,255,.1); }
+  .gtag.mid { border-color: rgba(72,202,228,.4); color: var(--accent2); background: rgba(72,202,228,.08); }
+  .gtag.lo { border-color: var(--border); color: var(--muted); background: var(--card2); }
+
+  .seq-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seq-item { display: flex; align-items: center; gap: 4px; }
+  .seq-num { width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: .68rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .seq-text { font-size: .82rem; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 3px 10px; }
+
+  .note-box { background: rgba(255,209,102,.06); border: 1px solid rgba(255,209,102,.2); border-radius: 10px; padding: 8px 14px; font-size: .82rem; color: var(--yellow); }
+
+  hr.divider { border: none; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <div class="home-header">
+    <h1>🎓 志願校系總覽</h1>
+    <p>點擊學校卡片，查看所有系所詳細資訊</p>
+  </div>
+
+  <div class="profile-bar">
+    <div class="label">你的條件</div>
+    <span class="badge neu">校排 3%</span>
+    <span class="badge avg">國文「均」</span>
+    <span class="badge top">英文「頂」</span>
+    <span class="badge avg">數B「均」</span>
+    <span class="badge top">社會「頂」</span>
+    <span class="badge top">英聽 A</span>
+    <span class="badge no">無數A</span>
+  </div>
+
+  <div class="uni-grid" id="uniGrid"></div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div id="detail" class="page">
+  <div class="detail-topbar">
+    <button class="back-btn" onclick="goHome()">← 返回</button>
+    <div class="detail-topbar-info">
+      <span class="detail-uni-tag" id="detailTag"></span>
+      <span class="detail-uni-name" id="detailName"></span>
+    </div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<script>
+const data = [
+  {
+    tag:"NTNU", name:"國立臺灣師範大學",
+    depts:[
+      { name:"教育心理與輔導學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測數B","英文學業","國文學業","數學學業"], r1:"2%", r2:"", note:"" },
+      { name:"社會教育學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測社會","學測國文","國文學業","學測英文","英文學業","學測數B"], r1:"3%", r2:"", note:"" },
+      { name:"幼兒與家庭科學學系", sub:"家庭生活與教育組", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測國文","英文學業","國文學業","數學學業"], r1:"5%", r2:"", note:"" },
+      { name:"幼兒與家庭科學學系", sub:"幼兒發展與教育組", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測國文","英文學業","國文學業","數學學業"], r1:"8%", r2:"", note:"" },
+      { name:"特殊教育學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國+英","學測國文","學測英文","國文學業","英文學業","公民學業"], r1:"2%", r2:"", note:"" },
+      { name:"教育學院學士班", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數A「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測英文","英文學業","學測國+英","學測國文","國文學業","學測社會"], r1:"6%", r2:"", note:"數A/數B同列，你以數B符合" },
+      { name:"華語文教學系", sub:"應用華語文學組", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國+英","學測英文","學測國文","英文學業","國文學業","歷史學業"], r1:"3%", r2:"", note:"" },
+      { name:"東亞學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測英文","學測國文","學測數B","學測社會","英文學業"], r1:"18%", r2:"", note:"" },
+      { name:"設計學系", sub:"產品設計組", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測國文","學測數B","英文學業","國文學業"], r1:"2%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NTPU", name:"國立臺北大學",
+    depts:[
+      { name:"公共行政暨政策學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測社會","學測國文","學測英文","學測數B","公民學業"], r1:"7%", r2:"", note:"" },
+      { name:"應用外語學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"],["英聽「A」","hi"]], seq:["在校學業","學測國+英+數B+社","英文學業","學測英文","國文學業","學測國文","學測社會"], r1:"14%", r2:"20%", note:"" },
+      { name:"休閒運動管理學系", sub:"", grades:[["英「均」","mid"]], seq:["在校學業","學測國+英+數B+社","學測英文","學測數B","學測社會","英文學業","數學學業"], r1:"12%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NCHU", name:"國立中興大學",
+    depts:[
+      { name:"外國語文學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["社「均」","mid"]], seq:["在校學業","學測國+英+社","學測英文","英文學業","學測國文","國文學業","學測社會"], r1:"8%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NCUE", name:"國立彰化師範大學",
+    depts:[
+      { name:"公共事務與公民教育學系", sub:"公民教育組", grades:[["社「均」","mid"]], seq:["在校學業","學測國+英+社","學測社會","學測國文","學測英文","公民學業","國文學業"], r1:"21%", r2:"5%", note:"" },
+      { name:"公共事務與公民教育學系", sub:"公共事務組", grades:[["社「均」","mid"]], seq:["在校學業","學測國+英+社","學測社會","學測國文","學測英文","公民學業","國文學業"], r1:"10%", r2:"", note:"" },
+      { name:"資訊管理學系", sub:"資訊管理組", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測數B","學測國文","數學學業","英文學業"], r1:"5%", r2:"", note:"" },
+      { name:"資訊管理學系", sub:"數位內容科技與管理組", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測數B","學測國文","數學學業","英文學業"], r1:"6%", r2:"", note:"" },
+      { name:"英語學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測社會","英文學業","國文學業","歷史學業"], r1:"12%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NCKU", name:"國立成功大學",
+    depts:[
+      { name:"企業管理學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["數B「均」","mid"]], seq:["在校學業","學測國+英+數B","學測英文","學測數B","學測國文","英文學業","數學學業"], r1:"4%", r2:"", note:"" },
+      { name:"政治學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數A「均」","mid"],["數B「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測社會","學測國+英+社","英文學業","數學學業"], r1:"18%", r2:"3%", note:"數A/數B同列，你以數B符合" },
+    ]
+  },
+  {
+    tag:"NUTN", name:"國立臺南大學",
+    depts:[
+      { name:"教育學系", sub:"", grades:[["國「後」","lo"]], seq:["在校學業","學測英文","學測國文","學測國+英","國文學業","英文學業","數學學業"], r1:"12%", r2:"", note:"" },
+      { name:"諮商與輔導學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測國+英+數B","英文學業","國文學業","公民學業"], r1:"8%", r2:"", note:"" },
+      { name:"特殊教育學系", sub:"", grades:[["國「均」","mid"]], seq:["在校學業","學測國+英+數B","學測國文","學測英文","學測數B","國文學業","英文學業"], r1:"19%", r2:"", note:"" },
+      { name:"幼兒教育學系", sub:"", grades:[["國「均」","mid"],["英「後」","lo"],["社「後」","lo"]], seq:["在校學業","學測國文","學測英文","學測社會","學測國+英+社","國文學業","英文學業"], r1:"20%", r2:"", note:"" },
+      { name:"文化與自然資源學系", sub:"", grades:[["社「均」","mid"]], seq:["在校學業","學測社會","學測英文","學測國文","歷史學業","地理學業","國文學業"], r1:"22%", r2:"", note:"" },
+      { name:"國語文學系", sub:"", grades:[["國「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測國+英","國文學業","英文學業","歷史學業"], r1:"30%", r2:"16%", note:"" },
+      { name:"英語學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測國+英","英文學業","國文學業","歷史學業"], r1:"12%", r2:"", note:"" },
+      { name:"行政管理學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測數B","學測社會","公民學業","國文學業"], r1:"14%", r2:"", note:"" },
+      { name:"經營與管理學系", sub:"", grades:[["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測英文","學測數B","學測國+英+數B","英文學業","數學學業","國文學業"], r1:"13%", r2:"", note:"" },
+      { name:"戲劇創作與應用學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"]], seq:["在校學業","學測國文","學測英文","國文學業","英文學業","學測社會","公民學業"], r1:"—", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NSYSU", name:"國立中山大學",
+    depts:[
+      { name:"企業管理學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測英文","學測數B","學測國文","英文學業","數學學業","國文學業"], r1:"3%", r2:"", note:"" },
+      { name:"劇場藝術學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國+英+社","學測國文","學測英文","學測社會","國文學業","英文學業"], r1:"7%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"NKNU", name:"國立高雄師範大學",
+    depts:[
+      { name:"事業經營學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["數B「均」","mid"]], seq:["在校學業","學測英文","學測數B","學測國文","英文學業","數學學業","國文學業"], r1:"5%", r2:"", note:"" },
+      { name:"英語學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["英聽「B」","mid"]], seq:["在校學業","英文學業","國文學業","學測國+英+社","學測英文","學測國文","學測社會"], r1:"13%", r2:"", note:"" },
+    ]
+  },
+  {
+    tag:"CCU", name:"國立中正大學",
+    depts:[
+      { name:"傳播學系", sub:"", grades:[["國「均」","mid"],["英「均」","mid"],["社「均」","mid"]], seq:["在校學業","學測國文","學測英文","學測社會","國文學業","英文學業","公民學業"], r1:"7%", r2:"", note:"" },
+      { name:"外國語文學系", sub:"", grades:[["國「均」","mid"],["英「前」","hi"],["社「均」","mid"]], seq:["在校學業","學測英文","學測國文","學測社會","學測國+英+社","英文學業","國文學業"], r1:"7%", r2:"", note:"" },
+    ]
+  },
+];
+
+function rankClass(v) {
+  if (!v || v==="—") return "n";
+  const n = parseInt(v);
+  return n <= 5 ? "g" : "y";
+}
+
+// Build home cards
+const grid = document.getElementById("uniGrid");
+data.forEach((uni, idx) => {
+  const rankPills = uni.depts.map(d => {
+    if (!d.r1 || d.r1==="—") return `<span class="rp m">—</span>`;
+    const n = parseInt(d.r1);
+    const cls = n<=5?"g":"y";
+    return `<span class="rp ${cls}">${d.name.length>6?d.name.slice(0,5)+"…":d.name} ${d.r1}</span>`;
+  }).slice(0,4).join("");
+
+  const card = document.createElement("div");
+  card.className = "uni-card";
+  card.innerHTML = `
+    <div class="uni-card-top">
+      <span class="uni-tag">${uni.tag}</span>
+      <span class="uni-name">${uni.name}</span>
+    </div>
+    <div class="rank-preview">${rankPills}</div>
+    <div class="uni-meta">
+      <span class="dept-count">${uni.depts.length} 個系所</span>
+      <span class="arrow-btn">→</span>
+    </div>
+  `;
+  card.addEventListener("click", () => openDetail(idx));
+  grid.appendChild(card);
+});
+
+function openDetail(idx) {
+  const uni = data[idx];
+  document.getElementById("detailTag").textContent = uni.tag;
+  document.getElementById("detailName").textContent = uni.name;
+
+  const body = document.getElementById("detailBody");
+  body.innerHTML = uni.depts.map((d, i) => {
+    const r1cls = rankClass(d.r1);
+    const r2cls = rankClass(d.r2);
+    const gradeTags = d.grades.map(([g, cls]) => `<span class="gtag ${cls}">${g}</span>`).join("");
+    const seqItems = d.seq.map((s, n) => `<div class="seq-item"><span class="seq-num">${n+1}</span><span class="seq-text">${s}</span></div>`).join("");
+    const r2html = d.r2 ? `<span class="rank-big ${r2cls}">🥈 第2輪 ${d.r2}</span>` : "";
+    const noteHtml = d.note ? `<div class="note-box">⚠️ ${d.note}</div>` : "";
+    const divider = i > 0 ? "" : "";
+
+    return `
+      <div class="dept-card">
+        <div class="dept-card-header">
+          <div class="dept-title-block">
+            <div class="dept-card-name">${d.name}</div>
+            ${d.sub ? `<div class="dept-card-sub">▸ ${d.sub}</div>` : ""}
+          </div>
+          <div class="rank-group">
+            <span class="rank-big ${r1cls}">🥇 第1輪 ${d.r1||"—"}</span>
+            ${r2html}
+          </div>
+        </div>
+        <div class="dept-card-body">
+          <div class="info-row">
+            <div class="info-label">115 檢定成績</div>
+            <div class="grade-tags">${gradeTags}</div>
+          </div>
+          <hr class="divider">
+          <div class="info-row">
+            <div class="info-label">分發比序（依序）</div>
+            <div class="seq-list">${seqItems}</div>
+          </div>
+          ${noteHtml}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("home").classList.remove("active");
+  document.getElementById("detail").classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.getElementById("detail").classList.remove("active");
+  document.getElementById("home").classList.add("active");
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
